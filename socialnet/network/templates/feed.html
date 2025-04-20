@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="mb-4">
+    <h1 class="display-5">Стрічка</h1>
+    <h2 class="h4 text-muted">Вітаю, {{ request.user.username }}!</h2>
+  </div>
+
+  <form method="post" action="{% url 'logout' %}" class="mb-3">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-danger">Вийти</button>
+  </form>
+
+  <a href="{% url 'create_post' %}" class="btn btn-primary mb-4">Створити пост</a>
+
+  <form method="post" id="chatForm" class="mb-4">
+  {% csrf_token %}
+  <label for="userSelect" class="form-label">Написати повідомлення:</label>
+  <div class="input-group">
+    <select id="userSelect" name="username" class="form-select">
+      {% for user in users %}
+        <option value="{{ user.username }}">{{ user.username }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-secondary">Почати/Відкрити чат</button>
+  </div>
+</form>
+
+<script>
+  document.getElementById('chatForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const selectedUser = document.getElementById('userSelect').value;
+    window.location.href = `/chat/start/${selectedUser}/`;
+  });
+</script>
+
+
+  {% for post in posts %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">{{ post.author.username }}</h5>
+        <h6 class="card-subtitle text-muted mb-2">{{ post.created_at|date:"d M Y H:i" }}</h6>
+        <p class="card-text">{{ post.content }}</p>
+        {% if post.image %}
+          <img src="{{ post.image.url }}" alt="Image" class="img-fluid rounded mb-2">
+        {% endif %}
+        <div>
+          ❤️
+          <button class="btn btn-outline-danger btn-sm like-button" data-post-id="{{ post.id }}">
+            {{ post.likes.count }}
+          </button>
+          |
+          <a href="{% url 'view_comments' post.id %}" class="ms-2 text-decoration-none">💬 {{ post.comments.count }} Коментарів</a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const likeButtons = document.querySelectorAll('.like-button');
+    likeButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const postId = this.getAttribute('data-post-id');
+        fetch(`/post/${postId}/like/`, {
+          method: 'GET',
+          headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          this.innerText = data.likes_count + " ❤️";
+        });
+      });
+    });
+
+    const chatForm = document.getElementById('chatForm');
+    const userSelect = document.getElementById('userSelect');
+
+    chatForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = userSelect.value;
+      this.action = `/chat/start/${username}/`;
+      this.submit();
+    });
+  });
+</script>

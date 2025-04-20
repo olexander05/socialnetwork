@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="mb-4 text-center">Редагувати профіль</h2>
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <h3 class="mt-4">Основна інформація</h3>
+          <div class="mb-3">
+            {{ user_form.as_p }}
+          </div>
+
+          <h3 class="mt-4">Профіль</h3>
+          <div class="mb-3">
+            {{ profile_form.as_p }}
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 mt-4">Зберегти</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

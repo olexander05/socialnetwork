@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Мої чати</h2>
+
+  {% for chat in chats %}
+    <div>
+      <a href="{% url 'chat_detail' chat.id %}">
+        Чат з: {{ chat.participants.exclude(id=request.user.id).first.username }}
+      </a>
+    </div>
+  {% empty %}
+    <p>Поки що немає чатів.</p>
+  {% endfor %}
+{% endblock %}

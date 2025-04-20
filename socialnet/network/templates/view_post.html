@@ -1,0 +1,33 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Перегляд посту</h2>
+
+    <div class="post-details">
+        <h3>{{ post.author.username }} — {{ post.created_at|date:"d M Y H:i" }}</h3>
+        <p>{{ post.content }}</p>
+
+        {% if post.image %}
+            <img src="{{ post.image.url }}" alt="Post Image" class="img-fluid" />
+        {% endif %}
+
+        <p>
+            <strong>❤️ {{ post.likes.count }}</strong> |
+            <a href="{% url 'view_comments' post.id %}">💬 {{ post.comments.count }} Коментарів</a>
+        </p>
+
+
+        {% if activity %}
+            <div class="activity-item mt-4">
+                <p>Активність: {{ activity.timestamp|date:"d M Y H:i" }} - <strong>{{ activity.user.username }}</strong> {{ activity.get_activity_type_display }}</p>
+                {% if activity.content %}
+                    <p>{{ activity.content }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+    </div>
+
+    <a href="{% url 'feed' %}" class="btn btn-secondary mt-3">Назад до стрічки</a>
+{% endblock %}

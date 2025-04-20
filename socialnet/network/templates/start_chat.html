@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Напишіть повідомлення користувачу {{ profile_user.username }}</h2>
+
+  <form method="post" action="{% url 'start_chat' profile_user.username %}">
+    {% csrf_token %}
+    <button type="submit">Створити чат</button>
+  </form>
+{% endblock %}

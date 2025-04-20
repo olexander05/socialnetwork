@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Чат</h2>
+
+  <div style="border: 1px solid #ccc; padding: 10px; max-height: 300px; overflow-y: scroll;">
+    {% for message in messages %}
+      <p><strong>{{ message.sender.username }}</strong>: {{ message.content }}</p>
+    {% endfor %}
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <textarea name="content" rows="2" style="width: 100%;"></textarea><br>
+    <button type="submit">Надіслати</button>
+  </form>
+
+{% endblock %}

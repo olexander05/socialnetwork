@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Профіль: {{ profile_user.username }}</h2>
+
+  {% if profile.avatar %}
+    <img src="{{ profile.avatar.url }}" alt="Avatar" width="150">
+  {% endif %}
+
+  <p><strong>Email:</strong> {{ profile_user.email }}</p>
+  <p><strong>Про себе:</strong> {{ profile.bio }}</p>
+
+  <h3>Пости:</h3>
+  {% for post in posts %}
+    <div style="border:1px solid #ccc; margin: 10px; padding: 10px;">
+      <p>{{ post.content }}</p>
+      {% if post.image %}
+        <img src="{{ post.image.url }}" alt="Image" width="300">
+      {% endif %}
+      <p><small>{{ post.created_at|date:"d M Y H:i" }}</small></p>
+    </div>
+  {% empty %}
+    <p>Користувач ще не створив постів.</p>
+  {% endfor %}
+{% endblock %}
