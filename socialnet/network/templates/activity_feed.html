@@ -3,6 +3,14 @@
 
 {% block content %}
     <h2>Мої активності</h2>
+
+    <form method="post" action="{% url 'delete_all_activities' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Ви впевнені, що хочете видалити всю активність?')">Видалити всю активність</button>
+    </form>
+
+    <br>
+
     {% for activity in activities %}
         <div class="activity-item">
             <p>{{ activity.timestamp|date:"d M Y H:i" }} - <strong>{{ activity.user.username }}</strong> {{ activity.get_activity_type_display }}</p>
@@ -10,8 +18,10 @@
                 <p>{{ activity.content }}</p>
             {% endif %}
             {% if activity.target_post %}
-                <p>Related post: <a href="{% url 'view_post' activity.target_post.id %}">{{ activity.target_post.content|truncatewords:5 }}</a></p>
+                <p>Пов'язаний пост: <a href="{% url 'view_post' activity.target_post.id %}">{{ activity.target_post.content|truncatewords:5 }}</a></p>
             {% endif %}
         </div>
+    {% empty %}
+        <p>У вас ще немає активності.</p>
     {% endfor %}
 {% endblock %}

@@ -19,4 +19,6 @@ urlpatterns = [
     path('chat/start/<str:username>/', views.start_chat, name='start_chat'),
     path('activity/', views.activity_feed, name='activity_feed'),
     path('post/<int:post_id>/', views.view_post, name='view_post'),
+    path('post/delete/<int:post_id>/', views.delete_post, name='delete_post'),
+    path('delete_all_activities/', views.delete_all_activities, name='delete_all_activities'),
 ]

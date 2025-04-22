@@ -29,7 +29,7 @@ class EditUserForm(forms.ModelForm):
         fields = ['username', 'email']
 
 class EditProfileForm(forms.ModelForm):
-    email = forms.EmailField(required=True)
+    # email = forms.EmailField(required=True)
 
     class Meta:
         model = Profile

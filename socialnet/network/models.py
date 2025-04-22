@@ -13,6 +13,7 @@ class Post(models.Model):
     content = models.TextField()
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.author.username} - {self.created_at}'
@@ -54,6 +55,7 @@ class Activity(models.Model):
         ('like_created', 'Like Created'),
         ('chat_created', 'Chat Created'),
         ('message_sent', 'Message Sent'),
+        ('post_deleted', 'Post Deleted'),
 
     ]
 
@@ -61,8 +63,8 @@ class Activity(models.Model):
     activity_type = models.CharField(max_length=50, choices=ACTIVITY_TYPES)
     timestamp = models.DateTimeField(auto_now_add=True)
     content = models.TextField(blank=True)
-    target_post = models.ForeignKey(Post, null=True, blank=True, on_delete=models.CASCADE)
-    target_comment = models.ForeignKey(Comment, null=True, blank=True, on_delete=models.CASCADE)
+    target_post = models.ForeignKey(Post, null=True, blank=True, on_delete=models.SET_NULL)
+    target_comment = models.ForeignKey(Comment, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f'{self.user.username} - {self.activity_type} at {self.timestamp}'

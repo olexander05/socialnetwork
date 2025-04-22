@@ -13,6 +13,9 @@
     {% csrf_token %}
     <textarea name="content" rows="2" style="width: 100%;"></textarea><br>
     <button type="submit">Надіслати</button>
+    <a href="{% url 'feed' %}">
+  <button type="button">Назад</button>
+</a>
   </form>
 
 {% endblock %}

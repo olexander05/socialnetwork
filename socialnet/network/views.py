@@ -10,6 +10,8 @@ from .models import Chat, Message
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import Post, Activity
+from django.utils import timezone
+
 
 
 def home(request):
@@ -30,7 +32,7 @@ def register(request):
 
 
 def feed(request):
-    posts = Post.objects.all().order_by('-created_at')
+    posts = Post.objects.filter(is_deleted=False).order_by('-created_at')
     users = User.objects.exclude(id=request.user.id)
     return render(request, 'feed.html', {'posts': posts, 'users': users})
 
@@ -41,11 +43,6 @@ def create_post(request):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-            Activity.objects.create(
-                user=request.user,
-                activity_type="New Post"
-
-            )
             return redirect('feed')
     else:
         form = PostForm()
@@ -60,10 +57,6 @@ def add_comment(request, post_id):
             comment.user = request.user
             comment.post = post
             comment.save()
-            Activity.objects.create(
-                user=request.user,
-                activity_type="New Comment"
-            )
             return redirect('feed')
     else:
         form = CommentForm()
@@ -112,7 +105,7 @@ def edit_profile(request):
 def view_profile(request, username):
     user = get_object_or_404(User, username=username)
     profile = user.profile
-    posts = user.post_set.all().order_by('-created_at')
+    posts = Post.objects.filter(is_deleted=False).order_by('-created_at')
 
     return render(request, 'view_profile.html', {
         'profile_user': user,
@@ -195,3 +188,24 @@ def activity_feed(request):
 def view_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     return render(request, 'view_post.html', {'post': post})
+
+@login_required
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.user == post.author or request.user.is_staff:
+        post.is_deleted = True
+        post.save()
+
+        Activity.objects.create(
+            user=request.user,
+            activity_type="post_deleted",
+            content=f'Пост "{post.content[:50]}" видалено.',
+            target_post=post,
+            timestamp=timezone.now()
+        )
+    return redirect('feed')
+
+@login_required
+def delete_all_activities(request):
+    Activity.objects.filter(user=request.user).delete()
+    return redirect('activity_feed')

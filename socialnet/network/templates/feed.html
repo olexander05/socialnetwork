@@ -14,26 +14,25 @@
   <a href="{% url 'create_post' %}" class="btn btn-primary mb-4">Створити пост</a>
 
   <form method="post" id="chatForm" class="mb-4">
-  {% csrf_token %}
-  <label for="userSelect" class="form-label">Написати повідомлення:</label>
-  <div class="input-group">
-    <select id="userSelect" name="username" class="form-select">
-      {% for user in users %}
-        <option value="{{ user.username }}">{{ user.username }}</option>
-      {% endfor %}
-    </select>
-    <button type="submit" class="btn btn-secondary">Почати/Відкрити чат</button>
-  </div>
-</form>
+    {% csrf_token %}
+    <label for="userSelect" class="form-label">Написати повідомлення:</label>
+    <div class="input-group">
+      <select id="userSelect" name="username" class="form-select">
+        {% for user in users %}
+          <option value="{{ user.username }}">{{ user.username }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-secondary">Почати/Відкрити чат</button>
+    </div>
+  </form>
 
-<script>
-  document.getElementById('chatForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const selectedUser = document.getElementById('userSelect').value;
-    window.location.href = `/chat/start/${selectedUser}/`;
-  });
-</script>
-
+  <script>
+    document.getElementById('chatForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const selectedUser = document.getElementById('userSelect').value;
+      window.location.href = `/chat/start/${selectedUser}/`;
+    });
+  </script>
 
   {% for post in posts %}
     <div class="card mb-3">
@@ -51,9 +50,18 @@
           </button>
           |
           <a href="{% url 'view_comments' post.id %}" class="ms-2 text-decoration-none">💬 {{ post.comments.count }} Коментарів</a>
+
+          {% if request.user == post.author or request.user.is_staff %}
+            <form method="post" action="{% url 'delete_post' post.id %}" style="display:inline;" class="ms-2 d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-warning">Видалити</button>
+            </form>
+          {% endif %}
         </div>
       </div>
     </div>
+  {% empty %}
+        <p>Постів ще немає</p>
   {% endfor %}
 {% endblock %}
 
